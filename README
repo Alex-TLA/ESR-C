@@ -1,21 +1,38 @@
+Docker container is derived from:
+    https://github.com/jenkinsci/docker
 
-
+Run project:
+    a. build Jenkins Docker
+        $ docker build -t jenkins-docker .
+    b. run docker with correct optins:
+        $ docker run -p 8080:8080 -p 50000:50000 -u root --privileged -v /var/run/docker.sock:/var/run/docker.sock -v ~/ESR-C/jenkins-home:/var/jenkins_home jenkins
+            
+        ! A massive workaround is used to be able to run docker inside of docker:
+            - prvileged container for Jenkins -> unsecure
+            - running Jenkin as root to be able to access /var/run/docker.sock -> unsecure
+                (adding to user group and setting group ID of host ID did not work -> Need to investigate)
+            - mounting /var/run/docker.sock to run container on host system and not nested 
+    
 Requrements:
-    a. Setup a Jenkins running inside a Docker container that 
+y    a. Setup a Jenkins running inside a Docker container that 
         can spawn docker slaves to run the jobs. 
     b. Setup a job on Jenkins using declarative or scripted 
         pipelines with following requirements: 
-        o Keep job history only for the last 10 jobs. 
-        o Add two parameters: 
+
+        RQ01: Keep job history only for the last 10 jobs. 
+        RQ02 Add two parameters: 
             - boolean printName 
             - string  name 
-        o Configure the "Throttle builds" option to only run 2 
-        o Schedule it to run every 30 minutes on the in a docker 
-            container pre-configured on Jenkins. 
-        o Clone two open source repositories of your choice. 
-        o Add one or two build steps to list the contents of the 
-            two folders and save them to a text file. 
-        o Add another build step that should check if the 
-            variable printName is checked and print the name. 
-        o Archive the text file. 
-        o Clean the workspace when the job is done. 
+        RQ03: Configure the "Throttle builds" option to only run 2 
+        RQ04: Schedule it to run every 30 minutes 
+        RQ05: on the in a docker container pre-configured on Jenkins. 
+        RQ06: Clone two open source repositories of your choice. 
+        RQ07: Add one or two build steps to list the contents of the two folders and save them to a text file. 
+        RQ08: Add another build step that should check if the variable printName is checked and print the name. 
+        RQ09: Archive the text file. 
+        RQ10: Clean the workspace when the job is done. 
+
+
+Missing:
+RQ03
+

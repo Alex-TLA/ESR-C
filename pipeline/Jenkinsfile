@@ -1,0 +1,50 @@
+node('master') {
+    properties([
+        //RQ02: Add parameters 
+        parameters([
+            booleanParam(defaultValue: false, description: 'set to print name', name: 'printName'),
+            string(defaultValue: 'default', description: 'Name', name: 'name'),
+        ]),
+        //RQ04: Run every 30 minutes
+        pipelineTriggers([cron('H/3 * * * *')]),
+        //RQ01: Keep only the last 10 builds
+//        [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10']]    
+        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')),
+    ])
+
+    try {
+        stage('checkout') {
+            dir('files') {
+                //RQ06: Clone two repos
+                git branch: "master", url: 'https://github.com/docker/docker-ce.git'
+                git branch: "master", url: 'https://github.com/git/git'
+            }
+        }
+
+        //RQ07: Build step to list content of the repos
+        stage('list') {
+            //RQ05: Run in Docker container
+            img = docker.image("openjdk:8-jdk")
+            img.pull()
+            img.inside() {
+                def OUTFILE = 'list-of-files.txt'
+                sh("cd files && find > ../${OUTFILE}")
+                //RQ09: Archive the text file 
+                archiveArtifacts artifacts: "${OUTFILE}", fingerprint: true, allowEmpty: false, onlyIfSuccessfulValue: true
+            }
+        }
+        //RQ08: Add step to check and print parameters
+        stage('print') {
+            if(params.printName) {
+                println("${params.name}")
+            }
+        }
+        currentBuild.result = 'SUCCESS'
+    } catch(err) {
+        currentBuild.result = 'FAILED'
+        throw err
+    } finally {
+        //RQ10: Clean up
+        step([$class: 'WsCleanup'])        
+    }
+}
