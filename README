@@ -1,0 +1,21 @@
+
+
+Requrements:
+    a. Setup a Jenkins running inside a Docker container that 
+        can spawn docker slaves to run the jobs. 
+    b. Setup a job on Jenkins using declarative or scripted 
+        pipelines with following requirements: 
+        o Keep job history only for the last 10 jobs. 
+        o Add two parameters: 
+            - boolean printName 
+            - string  name 
+        o Configure the "Throttle builds" option to only run 2 
+        o Schedule it to run every 30 minutes on the in a docker 
+            container pre-configured on Jenkins. 
+        o Clone two open source repositories of your choice. 
+        o Add one or two build steps to list the contents of the 
+            two folders and save them to a text file. 
+        o Add another build step that should check if the 
+            variable printName is checked and print the name. 
+        o Archive the text file. 
+        o Clean the workspace when the job is done. 
