@@ -6,7 +6,7 @@ node('master') {
             string(defaultValue: 'default', description: 'Name', name: 'name'),
         ]),
         //RQ04: Run every 30 minutes
-        pipelineTriggers([cron('H/3 * * * *')]),
+        pipelineTriggers([cron('H/30 * * * *')]),
         //RQ01: Keep only the last 10 builds
 //        [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10']]    
         buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')),
