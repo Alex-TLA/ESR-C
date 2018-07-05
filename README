@@ -4,17 +4,19 @@ Docker container is derived from:
 Run project:
     a. build Jenkins Docker
         $ docker build -t jenkins-docker .
-    b. run docker with correct optins:
-        $ docker run -p 8080:8080 -p 50000:50000 -u root --privileged -v /var/run/docker.sock:/var/run/docker.sock -v ~/ESR-C/jenkins-home:/var/jenkins_home jenkins
-            
+    b. run docker with correct options:
+        $ docker run -p 8080:8080 -p 50000:50000 -u root -v /var/run/docker.sock:/var/run/docker.sock -v ~/ESR-C/jenkins-home:/var/jenkins_home jenkins
+    c. open Jenkins page in browser and click on "Scan Repository Now" in the ESR-C-build job (security is deactivated for this example project)
+        -> The branch should be discovered and built. After this the build is run every 30 minutes and you can use parameters. The checkout of the ESR-C repo takes some time, since there are          no GitHu Credentials in the container (Quota for anonymous users)
+
+
         ! A massive workaround is used to be able to run docker inside of docker:
-            - prvileged container for Jenkins -> unsecure
-            - running Jenkin as root to be able to access /var/run/docker.sock -> unsecure
+            - running Jenkin as root to be able to access /var/run/docker.sock -> not secure
                 (adding to user group and setting group ID of host ID did not work -> Need to investigate)
             - mounting /var/run/docker.sock to run container on host system and not nested 
     
-Requrements:
-y    a. Setup a Jenkins running inside a Docker container that 
+Requirements:
+    a. Setup a Jenkins running inside a Docker container that 
         can spawn docker slaves to run the jobs. 
     b. Setup a job on Jenkins using declarative or scripted 
         pipelines with following requirements: 
@@ -23,7 +25,7 @@ y    a. Setup a Jenkins running inside a Docker container that
         RQ02 Add two parameters: 
             - boolean printName 
             - string  name 
-        RQ03: Configure the "Throttle builds" option to only run 2 
+        RQ03: Configure the "Throttle builds" option to only run 2 times each hour. 
         RQ04: Schedule it to run every 30 minutes 
         RQ05: on the in a docker container pre-configured on Jenkins. 
         RQ06: Clone two open source repositories of your choice. 
@@ -32,7 +34,6 @@ y    a. Setup a Jenkins running inside a Docker container that
         RQ09: Archive the text file. 
         RQ10: Clean the workspace when the job is done. 
 
-
-Missing:
-RQ03
-
+Unfulfilled Requirement:
+RQ03: I could find no proper solution to achieve this. It seems like there is nothing available at the moment. 
+    for example: https://stackoverflow.com/questions/29605955/jenkins-throttle-build-rate
